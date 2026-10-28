@@ -18,3 +18,31 @@ stages:
       displayName: 'Build'
     - script: dotnet test --configuration Release --no-build
       displayName: 'Test'
+
+- stage: Provision
+  dependsOn: BuildAndTest
+  jobs:
+  - job: ProvisionInfrastructure
+    steps:
+    - task: AzureCLI@2
+      displayName: 'What-if preview'
+      inputs:
+        azureSubscription: 'arm-pharmacyapi-demo-dev'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          az deployment group what-if \
+            --resource-group rg-durai \
+            --template-file infra/main.bicep \
+            --parameters infra/dev.bicepparam
+    - task: AzureCLI@2
+      displayName: 'Apply'
+      inputs:
+        azureSubscription: 'arm-pharmacyapi-demo-dev'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          az deployment group create \
+            --resource-group rg-durai \
+            --template-file infra/main.bicep \
+            --parameters infra/dev.bicepparam
