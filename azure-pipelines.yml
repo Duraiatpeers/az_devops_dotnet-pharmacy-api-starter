@@ -46,3 +46,19 @@ stages:
             --resource-group rg-durai \
             --template-file infra/main.bicep \
             --parameters infra/dev.bicepparam
+
+- stage: Deploy
+  dependsOn: Provision
+  jobs:
+  - job: DeployApp
+    steps:
+    - task: UseDotNet@2
+      inputs:
+        version: '8.0.x'
+    - script: dotnet publish PharmacyApi.Demo/PharmacyApi.Demo.csproj -c Release -o $(Build.ArtifactStagingDirectory)
+      displayName: 'Publish'
+    - task: AzureWebApp@1
+      inputs:
+        azureSubscription: 'arm-pharmacyapi-demo-dev'
+        appName: 'app-pharmacyapi-demo-dev'
+        package: '$(Build.ArtifactStagingDirectory)'
