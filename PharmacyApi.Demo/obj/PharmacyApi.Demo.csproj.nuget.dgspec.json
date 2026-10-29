@@ -30,19 +30,29 @@
         },
         "warningProperties": {
           "warnAsError": [
-            "NU1605"
+            "NU1902",
+            "NU1903",
+            "NU1904"
           ]
         },
         "restoreAuditProperties": {
           "enableAudit": "true",
-          "auditLevel": "low",
-          "auditMode": "direct"
+          "auditLevel": "moderate",
+          "auditMode": "all"
         }
       },
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "Azure.Extensions.AspNetCore.Configuration.Secrets": {
+              "target": "Package",
+              "version": "[1.5.2, )"
+            },
+            "Azure.Identity": {
+              "target": "Package",
+              "version": "[1.21.0, )"
+            },
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[8.0.33, )"
