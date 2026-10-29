@@ -1,16 +1,24 @@
+using Azure.Identity;
+
 var builder = WebApplication.CreateBuilder(args);
+
+var keyVaultUri = builder.Configuration["KeyVaultUri"];
+if (!string.IsNullOrEmpty(keyVaultUri))
+{
+    builder.Configuration.AddAzureKeyVault(
+        new Uri(keyVaultUri),
+        new DefaultAzureCredential());
+}
+
 var app = builder.Build();
 
-app.MapGet("/prescriptions/{id}", (int id) =>
+app.MapGet("/health", (IConfiguration config) =>
 {
-    return Results.Ok(new
-    {
-        Id = id,
-        DrugName = "Amoxicillin",
-        Dosage = "500mg"
-    });
+    var hasSecret = !string.IsNullOrEmpty(config["SqlConnectionString"]);
+    return Results.Ok(new { status = "healthy", secretLoaded = hasSecret });
 });
 
-app.MapGet("/health", () => Results.Ok("healthy"));
+app.MapGet("/prescriptions/{id}", (int id) =>
+    Results.Ok(new { Id = id, DrugName = "Amoxicillin", Dosage = "500mg" }));
 
 app.Run();
