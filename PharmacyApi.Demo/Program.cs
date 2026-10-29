@@ -1,7 +1,5 @@
 using Azure.Identity;
 
-// TEMP_AWS_KEY = "AKIAZQ3DRRMXXW2VKPQF"
-
 var builder = WebApplication.CreateBuilder(args);
 
 var keyVaultUri = builder.Configuration["KeyVaultUri"];
