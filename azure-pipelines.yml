@@ -19,8 +19,19 @@ stages:
     - script: dotnet test --configuration Release --no-build
       displayName: 'Test'
 
-- stage: Provision
+- stage: SecretScan
   dependsOn: BuildAndTest
+  jobs:
+  - job: ScanForSecrets
+    steps:
+    - script: |
+        docker run --rm -v $(Build.SourcesDirectory):/repo \
+          zricethezav/gitleaks:latest detect \
+          --source="/repo" --no-git -v --exit-code 1
+      displayName: 'Gitleaks secret scan'
+
+- stage: Provision
+  dependsOn: SecretScan
   jobs:
   - job: ProvisionInfrastructure
     steps:
